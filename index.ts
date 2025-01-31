@@ -14,8 +14,6 @@ app.use(bodyParser.json());
 // Routes
 app.use("/api", faqRoutes);
 
-console.log(process.env.MONGODB_URI);
-
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/faq")

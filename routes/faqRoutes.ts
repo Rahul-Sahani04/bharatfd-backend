@@ -1,7 +1,7 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import { FAQ, FAQDocument } from '../models/FAQ';
-import translate from 'google-translate-api';
+import translate from 'google-translate-api-x';
 import { createClient } from 'redis';
 
 const router = express.Router();
@@ -34,6 +34,15 @@ const checkCache = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+router.get('/clear-cache', async (req: Request, res: Response) => {
+  try {
+    await client.flushAll();
+    res.status(200).send('Cache cleared');
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 // Get all FAQs
 router.get('/faqs', checkCache, async (req: Request, res: Response) => {
   try {
@@ -48,8 +57,8 @@ router.get('/faqs', checkCache, async (req: Request, res: Response) => {
         };
       })
     );
-    client.setEx(`faqs_${lang}`, 3600, JSON.stringify(translatedFaqs));
-    res.json(translatedFaqs);
+    // client.setEx(`faqs_${lang}`, 3600, JSON.stringify(translatedFaqs));
+    res.json({ faqs: translatedFaqs, lang: lang || 'en' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
@@ -62,24 +71,34 @@ router.post('/faqs', async (req: Request, res: Response) => {
     const { question, answer } = req.body;
     const faq = new FAQ({ question, answer });
 
-    // Translate and save
-    const [hiTranslation, bnTranslation] = await Promise.all([
-      translate(question, { to: 'hi' }),
-      translate(answer, { to: 'hi' }),
-      translate(question, { to: 'bn' }),
-      translate(answer, { to: 'bn' }),
-    ]);
+    console.log(question, answer);
 
-    console.log(hiTranslation, bnTranslation);
+
+    // Translate and save
+    const hiTranslation = await translate(question, { to: 'hi', autoCorrect: true });
+    const bnTranslation = await translate(question, { to: 'bn', autoCorrect: true });
+
+    const hiAnswerTranslation = await translate(answer, { to: 'hi', autoCorrect: true });
+    const bnAnswerTranslation = await translate(answer, { to: 'bn', autoCorrect: true });
+
+
+    console.log("English Question: ", hiTranslation);
+
+    console.log("Hindi Question: ", hiTranslation.text);
+    console.log("Hindi Answer: ", hiAnswerTranslation.text);
+
+    console.log("Bengali Question: ", bnTranslation.text);
+    console.log("Bengali Answer: ", bnAnswerTranslation.text);
+
 
     faq.translations = {
       hi: {
-        question: hiTranslation[0].text,
-        answer: hiTranslation[1].text,
+        question: hiTranslation.text,
+        answer: hiAnswerTranslation.text,
       },
       bn: {
-        question: bnTranslation[0].text,
-        answer: bnTranslation[1].text,
+        question: bnTranslation.text,
+        answer: bnAnswerTranslation.text,
       },
     };
 
