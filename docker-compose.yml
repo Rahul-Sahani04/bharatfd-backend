@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://rahul:5cqejf6WQ76boKHp@bharatfd/?ssl=true&replicaSet=atlas-cti6g9-shard-0&authSource=admin&retryWrites=true&w=majority&appName=BharatFDBackend
+      - REDIS_URL=redis://default:EbB7xaBolkXUU3X4zDfuERlyu2fuXeEy@redis-18957.c264.ap-south-1-1.ec2.redns.redis-cloud.com:18957
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:4.4
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
