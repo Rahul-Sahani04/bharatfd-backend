@@ -5,12 +5,13 @@ import translate from 'google-translate-api-x';
 import { createClient } from 'redis';
 
 const router = express.Router();
+
 const client = createClient({
-  username: 'default',
-  password: 'EbB7xaBolkXUU3X4zDfuERlyu2fuXeEy',
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PASSWORD,
   socket: {
-      host: 'redis-18957.c264.ap-south-1-1.ec2.redns.redis-cloud.com',
-      port: 18957
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT || '6379'),
   }
 });
 
