@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage FAQs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 80%;
+      margin: auto;
+      overflow: hidden;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding-top: 30px;
+      min-height: 70px;
+      border-bottom: #77aaff 3px solid;
+    }
+    header a {
+      color: #fff;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-size: 16px;
+    }
+    header ul {
+      padding: 0;
+      list-style: none;
+    }
+    header li {
+      float: left;
+      display: inline;
+      padding: 0 20px 0 20px;
+    }
+    .main {
+      padding: 20px;
+      background: #fff;
+      margin-top: 20px;
+    }
+    .faq-item {
+      background: #f4f4f4;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px #ccc solid;
+    }
+    .faq-item h3 {
+      margin: 0;
+    }
+    .faq-item p {
+      margin: 5px 0 0 0;
+    }
+    .faq-item form {
+      display: inline;
+    }
+    .faq-item button {
+      background: #333;
+      color: #fff;
+      border: 0;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .faq-item button:hover {
+      background: #555;
+    }
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px #ccc solid;
+    }
+    .form-container label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-container input, .form-container textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .form-container button {
+      background: #333;
+      color: #fff;
+      border: 0;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .form-container button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Manage FAQs</h1>
+    </div>
+  </header>
+  <div class="container main">
+    <h2>FAQs</h2>
+    <ul>
+      <% faqs.forEach(faq => { %>
+        <li class="faq-item">
+          <h3><%= faq.question %></h3>
+          <p><%= faq.answer %></p>
+          <a href="#" onclick="editFaq('<%= faq._id %>', '<%= faq.question %>', '<%= faq.answer %>')">Edit</a>
+          <form action="/admin/faqs/<%= faq._id %>/delete" method="POST">
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+    <div class="form-container">
+      <h2 id="form-title">Create FAQ</h2>
+      <form id="faq-form" action="/admin/faqs" method="POST">
+        <input type="hidden" id="faq-id" name="id">
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="question" required>
+        <label for="answer">Answer:</label>
+        <textarea id="answer" name="answer" required></textarea>
+        <button type="submit" id="form-button">Create</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    function editFaq(id, question, answer) {
+      document.getElementById('faq-id').value = id;
+      document.getElementById('question').value = question;
+      document.getElementById('answer').value = answer;
+      document.getElementById('form-title').innerText = 'Edit FAQ';
+      document.getElementById('faq-form').action = '/admin/faqs/' + id;
+      document.getElementById('form-button').innerText = 'Update';
+    }
+  </script>
+</body>
+</html>

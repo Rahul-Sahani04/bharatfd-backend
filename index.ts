@@ -1,8 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+import path from "path";
 import cors from "cors";
 import faqRoutes from "./routes/faqRoutes";
+import adminRoutes from "./routes/adminRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,8 +13,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Routes
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 app.use("/api", faqRoutes);
+app.use("/", adminRoutes);
 
 // MongoDB connection
 mongoose
