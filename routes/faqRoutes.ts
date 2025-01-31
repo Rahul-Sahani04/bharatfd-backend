@@ -82,16 +82,6 @@ router.post('/faqs', async (req: Request, res: Response) => {
     const hiAnswerTranslation = await translate(answer, { to: 'hi', autoCorrect: true });
     const bnAnswerTranslation = await translate(answer, { to: 'bn', autoCorrect: true });
 
-
-    console.log("English Question: ", hiTranslation);
-
-    console.log("Hindi Question: ", hiTranslation.text);
-    console.log("Hindi Answer: ", hiAnswerTranslation.text);
-
-    console.log("Bengali Question: ", bnTranslation.text);
-    console.log("Bengali Answer: ", bnAnswerTranslation.text);
-
-
     faq.translations = {
       hi: {
         question: hiTranslation.text,
