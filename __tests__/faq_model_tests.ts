@@ -1,7 +1,9 @@
-import { expect } from "@jest/globals";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { FAQ } from "../models/FAQ";
+import { expect } from '@jest/globals';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { FAQ } from '../models/FAQ';
+import { sanitizeHtml } from '../middleware/sanitizer';
+import { Request, Response, NextFunction } from 'express';
 
 let mongoServer: MongoMemoryServer;
 
@@ -16,8 +18,8 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-describe("FAQ Model", () => {
-  it("should create an FAQ document successfully", async () => {
+describe('FAQ Model', () => {
+  it('should create an FAQ document successfully', async () => {
     const faq = new FAQ({
       question: "What is AI?",
       answer: "AI stands for Artificial Intelligence.",
@@ -33,10 +35,10 @@ describe("FAQ Model", () => {
     expect(faq.question).toBe("What is AI?");
   });
 
-  it("should return translated text when available", () => {
+  it('should handle rich text content in answers', async () => {
     const faq = new FAQ({
-      question: "What is AI?",
-      answer: "AI stands for Artificial Intelligence.",
+      question: 'What is AI?',
+      answer: '<p>AI stands for <strong>Artificial Intelligence</strong>.</p><ul><li>Machine Learning</li><li>Deep Learning</li></ul>',
       translations: {
         hi: {
           question: "एआई क्या है?",
@@ -50,7 +52,23 @@ describe("FAQ Model", () => {
     expect(translated.answer).toBe("एआई का मतलब कृत्रिम बुद्धिमत्ता है।");
   });
 
-  it("should return default text if translation is unavailable", () => {
+  it('should sanitize HTML content', () => {
+    const mockReq = {
+      body: {
+        answer: '<p>Safe content</p><script>alert("unsafe")</script>'
+      }
+    } as Request;
+    const mockRes = {} as Response;
+    const nextFn = jest.fn() as NextFunction;
+
+    sanitizeHtml(mockReq, mockRes, nextFn);
+
+    expect(mockReq.body.answer).not.toContain('<script>');
+    expect(mockReq.body.answer).toContain('<p>Safe content</p>');
+    expect(nextFn).toHaveBeenCalled();
+  });
+
+  it('should return translated text when available', () => {
     const faq = new FAQ({
       question: "What is AI?",
       answer: "AI stands for Artificial Intelligence.",
@@ -62,7 +80,7 @@ describe("FAQ Model", () => {
     expect(translated.answer).toBe("AI stands for Artificial Intelligence.");
   });
 
-  it("should fail validation when required fields are missing", async () => {
+  it('should fail validation when required fields are missing', async () => {
     const faq = new FAQ({}); // Missing question and answer
 
     try {
