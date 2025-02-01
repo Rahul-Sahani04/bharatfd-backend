@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document } from "mongoose";
 
 const faqSchema = new Schema(
   {
@@ -19,7 +19,7 @@ const faqSchema = new Schema(
 );
 
 faqSchema.methods.getTranslatedText = function (lang: string) {
-  if (this.translations[lang]) {
+  if (this.translations[lang] && this.translations[lang].question) {
     return {
       question: this.translations[lang].question,
       answer: this.translations[lang].answer,
@@ -40,4 +40,4 @@ export interface FAQDocument extends Document {
   getTranslatedText(lang: string): { question: string; answer: string };
 }
 
-export const FAQ = model<FAQDocument>('FAQ', faqSchema);
+export const FAQ = model<FAQDocument>("FAQ", faqSchema);

@@ -72,15 +72,12 @@ router.post('/faqs', async (req: Request, res: Response) => {
     const { question, answer } = req.body;
     const faq = new FAQ({ question, answer });
 
-    console.log(question, answer);
-
-
     // Translate and save
-    const hiTranslation = await translate(question, { to: 'hi', autoCorrect: true });
-    const bnTranslation = await translate(question, { to: 'bn', autoCorrect: true });
+    const hiTranslation = await translate(question, { to: 'hi', autoCorrect: true }) as any;
+    const bnTranslation = await translate(question, { to: 'bn', autoCorrect: true }) as any;
 
-    const hiAnswerTranslation = await translate(answer, { to: 'hi', autoCorrect: true });
-    const bnAnswerTranslation = await translate(answer, { to: 'bn', autoCorrect: true });
+    const hiAnswerTranslation = await translate(answer, { to: 'hi', autoCorrect: true }) as any;
+    const bnAnswerTranslation = await translate(answer, { to: 'bn', autoCorrect: true }) as any;
 
     faq.translations = {
       hi: {
