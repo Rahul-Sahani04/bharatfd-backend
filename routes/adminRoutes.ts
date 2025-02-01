@@ -1,5 +1,6 @@
 import express from 'express';
 import { FAQ } from '../models/FAQ';
+import { sanitizeHtml } from '../middleware/sanitizer';
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ router.get('/admin/faqs', async (req, res) => {
   res.render('admin/manageFaqs', { faqs });
 });
 
-router.post('/admin/faqs', async (req, res) => {
+router.post('/admin/faqs', sanitizeHtml, async (req, res) => {
   const { id, question, answer } = req.body;
   if (id) {
     await FAQ.findByIdAndUpdate(id, { question, answer });
