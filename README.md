@@ -25,7 +25,7 @@ This is a backend application for managing FAQs with multilingual support using 
 ### Local Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/bharatfd-backend.git
+   git clone https://github.com/Rahul-Sahani04/bharatfd-backend.git
    cd bharatfd-backend
    ```
 
